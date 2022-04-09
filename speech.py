@@ -5,7 +5,7 @@ import wave
 import numpy as np
 import pyaudio
 from aip import AipSpeech
-os.close(sys.stderr.fileno()) # https://raspberrypi.stackexchange.com/questions/103847/cant-use-microphone-with-speech-recognition
+# os.close(sys.stderr.fileno()) # https://raspberrypi.stackexchange.com/questions/103847/cant-use-microphone-with-speech-recognition
 """ 你的 APPID AK SK """
 APP_ID = '25905795'
 API_KEY = 'pUevsjbFFpoLvZg1bwKw8ALi'

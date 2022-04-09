@@ -44,6 +44,8 @@ def handle_voice():
     elif '关客厅的灯'.encode() in word:
         requests.get("http://192.168.31.142/off")
         word_get_speech('已关客厅的灯')
+    else:
+        word_get_speech('听不懂，再说一遍好吗')
 
 
 def callback():
@@ -72,6 +74,6 @@ if __name__ == '__main__':
     try:
         listening()
     except Exception as e:
-        listening()
         traceback.print_exc()
+        listening()
 
