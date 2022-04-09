@@ -51,17 +51,14 @@ def word_get_speech(word):
 # 假如你不说话，2秒钟+1秒判断后识别，假如你说话，最多可以连续7秒钟再识别，很人性化
 def get_speech():
     # 最小说话音量
-    min_voice = 4000
+    min_voice = 1000
     # 最大说话音量，+的音量
     max_voice = 28000
-    # 录音判断开始时间，前面的时间可能是回复的语音音量过大导致误判断
-    # start_sec = 2
-    # 录音判断间隔，约等于8/16=0.5秒
+    # 录音判断间隔，约等于5/16 s
     interval = 5
-    # 最大录音时间,16*10=160,十秒钟
+    # 最大录音时间128/16=8s
     max_record_time = 128
-    temp = 20  # temp为检测声音值
-    chunk = 1024
+    chunk = 1024  # 数组大小1024，每一个元素2个字节
     FORMAT = pyaudio.paInt16
     CHANNELS = 1
     RATE = 16000
@@ -76,40 +73,41 @@ def get_speech():
                     frames_per_buffer=chunk)
     print("录音开始")
 
-    frames = []
+    voice_frames = []
     flag = False  # 一重判断,判断是否已经开始说话，这个判断从第5个数字开始，防止前面数字大于30000的情况
     stat2 = False  # 二重判断,第一次判断声音变小
     stat3 = False  # 三重判断,第二次判断声音变小
-    tempnum = 0  # tempnum、tempnum2、tempnum3为时间
+    frame_num = 0  # frame_num、tempnum2、tempnum3为时间
     tempnum2 = 0
     tempnum3 = 0
     while True:
         data = stream.read(chunk, exception_on_overflow=False)
-        frames.append(data)
+        voice_frames.append(data)
         audio_data = np.frombuffer(data, dtype=np.short)
         # 获取录音的音量
-        temp = np.max(audio_data)
-        # 如果时间大于其实判断时间并且音量在正常范围之内
-        if not flag and min_voice < temp < max_voice:
+        cur_max_voice = np.max(audio_data)
+        # print(frame_num, "     ", cur_max_voice)
+        # 如果音量在正常范围之内
+        if min_voice < cur_max_voice < max_voice:
             # 判断出开始说话
             flag = True
-        # 如果已经开始说话，那么开始判断
+        # 如果已经开始说话，那么开始判决
         if flag:
             # 如果声音小于正常范围
-            if temp < min_voice:
+            if cur_max_voice < min_voice:
                 # 如果是stat2还是False状态，证明还未开始判断
                 if not stat2:
                     # 时间点2和时间点3
-                    tempnum2 = tempnum + interval
-                    tempnum3 = tempnum + interval
+                    tempnum2 = frame_num + interval
+                    tempnum3 = frame_num + interval
                     # 状态2开始变为True，说明第一次判断开始
                     stat2 = True
                 # 开始第二次判断，stat2为True表示已经第一次判断，超过第一次时间段开始第二次判断
-                elif stat2 and not stat3 and tempnum > tempnum2:
+                elif stat2 and not stat3 and frame_num > tempnum2:
                     # 已经超过了第一个时间段，那么stat3为True,这是第二次判断
                     stat3 = True
                 # stat2和stat3都为True并且超过第二个时间段，这是最后一次判断
-                if stat2 and stat3 and tempnum > tempnum3:
+                if stat2 and stat3 and frame_num > tempnum3:
                     print("录音完毕")
                     # 跳出循环
                     break
@@ -118,8 +116,8 @@ def get_speech():
                 stat2 = False
                 stat3 = False
         # 时间约1/16秒每次递增
-        tempnum = tempnum + 1
-        if tempnum > max_record_time:  # 超时直接退出
+        frame_num = frame_num + 1
+        if frame_num > max_record_time:  # 超时直接退出
             print("录音结束")
             # 跳出循环
             break
@@ -130,7 +128,7 @@ def get_speech():
     wf.setnchannels(CHANNELS)
     wf.setsampwidth(p.get_sample_size(FORMAT))
     wf.setframerate(RATE)
-    wf.writeframes(b''.join(frames))
+    wf.writeframes(b''.join(voice_frames))
     wf.close()
 
 
@@ -139,4 +137,5 @@ def play_music(path):
 
 
 if __name__ == '__main__':
-    word_get_speech("语音识别失败")
+    get_speech()
+    play_music(speech)
