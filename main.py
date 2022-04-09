@@ -1,4 +1,3 @@
-import difflib
 import random
 import signal
 
@@ -8,7 +7,7 @@ import snowboydecoder
 from speech import speech_get_word, word_get_speech, play_music
 
 interrupted = False
-model = "model/小雪.pmdl"
+model = "model/小雪.pmdl"  # https://snowboy.hahack.com/
 
 
 def signal_handler(signal, frame):
@@ -49,7 +48,9 @@ def handle_voice():
 
 def callback():
     # 播放唤醒词
-    play_music(random.choice(["resources/你好.mp3", "resources/在呢.mp3"]))
+    # play_music(random.choice(["resources/你好.mp3", "resources/在呢.mp3"]))
+    play_music(random.choice(["resources/ding.wav"]))
+
     # 唤醒之后先关掉监听
     detector.terminate()
     # 录音加后续的动作
@@ -65,10 +66,6 @@ def listening():
                    sleep_time=0.03)
     print('Listening... Press Ctrl+C to exit')
     detector.terminate()
-
-
-def compareStr(s1, s2):
-    return difflib.SequenceMatcher(None, s1, s2).quick_ratio()
 
 
 if __name__ == '__main__':
