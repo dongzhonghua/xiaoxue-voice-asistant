@@ -1,10 +1,11 @@
 import os
+import sys
 import wave
 
 import numpy as np
 import pyaudio
 from aip import AipSpeech
-
+os.close(sys.stderr.fileno()) # https://raspberrypi.stackexchange.com/questions/103847/cant-use-microphone-with-speech-recognition
 """ 你的 APPID AK SK """
 APP_ID = '25905795'
 API_KEY = 'pUevsjbFFpoLvZg1bwKw8ALi'
@@ -51,7 +52,7 @@ def word_get_speech(word):
 # 假如你不说话，2秒钟+1秒判断后识别，假如你说话，最多可以连续7秒钟再识别，很人性化
 def get_speech():
     # 最小说话音量
-    min_voice = 1000
+    min_voice = 500
     # 最大说话音量，+的音量
     max_voice = 28000
     # 录音判断间隔，约等于5/16 s
@@ -133,7 +134,7 @@ def get_speech():
 
 
 def play_music(path):
-    os.system("afplay " + path)  # > /dev/null 2>&1 &
+    os.system("play " + path)  # > /dev/null 2>&1 &
 
 
 if __name__ == '__main__':

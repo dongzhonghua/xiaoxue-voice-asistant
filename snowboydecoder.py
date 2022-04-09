@@ -54,7 +54,7 @@ class RingBuffer(object):
         return tmp
 
 
-def play_audio_file(fname=DETECT_DONG):
+def play_audio_file(fname=DETECT_DING):
     """Simple callback function to play a wave file. By default it plays
     a Ding sound.
 

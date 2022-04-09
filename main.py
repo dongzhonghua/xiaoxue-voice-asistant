@@ -2,7 +2,7 @@ import random
 import signal
 
 import requests
-
+import traceback
 import snowboydecoder
 from speech import speech_get_word, word_get_speech, play_music
 
@@ -61,12 +61,17 @@ def callback():
 
 def listening():
     # main loop
+    print('Listening... Press Ctrl+C to exit')
     detector.start(detected_callback=callback,
                    interrupt_check=interrupt_callback,
                    sleep_time=0.03)
-    print('Listening... Press Ctrl+C to exit')
     detector.terminate()
 
 
 if __name__ == '__main__':
-    listening()
+    try:
+        listening()
+    except Exception as e:
+        listening()
+        traceback.print_exc()
+
