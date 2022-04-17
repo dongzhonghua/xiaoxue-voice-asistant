@@ -3,6 +3,9 @@
 import collections
 import logging
 import os
+import socket
+import sys
+import threading
 import time
 import wave
 from contextlib import contextmanager
@@ -20,6 +23,7 @@ TOP_DIR = os.path.dirname(os.path.abspath(__file__))
 RESOURCE_FILE = os.path.join(TOP_DIR, "resources/common.res")
 DETECT_DING = os.path.join(TOP_DIR, "resources/ding.wav")
 DETECT_DONG = os.path.join(TOP_DIR, "resources/dong.wav")
+RECEIVE_DATA = True
 
 
 def py_error_handler(filename, line, function, err, fmt):
@@ -131,6 +135,25 @@ class HotwordDetector(object):
         self.ring_buffer = RingBuffer(
             self.detector.NumChannels() * self.detector.SampleRate() * 5)
 
+        self.socket_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        self.target_ip = '192.168.31.56'
+        self.target_port = 9808
+
+        self.receive_thread = threading.Thread(target=self.receive_server_data)
+        self.receive_thread.start()
+
+    def receive_server_data(self):
+        while True:
+            try:
+                data = self.socket_client.recv(1024)
+                print("snowboy receive data, len: {}".format(len(data)))
+                self.ring_buffer.extend(data)
+            except KeyboardInterrupt:
+                sys.exit(-1)
+            except:
+                pass
+
     def start(self, detected_callback=play_audio_file,
               interrupt_check=lambda: False,
               sleep_time=0.03,
@@ -165,31 +188,38 @@ class HotwordDetector(object):
         """
         self._running = True
 
-        def audio_callback(in_data, frame_count, time_info, status):
-            self.ring_buffer.extend(in_data)
-            play_data = chr(0) * len(in_data)
-            return play_data, pyaudio.paContinue
-
+        # def audio_callback(in_data, frame_count, time_info, status):
+        #     self.ring_buffer.extend(in_data)
+        #     play_data = chr(0) * len(in_data)
+        #     return play_data, pyaudio.paContinue
+        #
         with no_alsa_error():
             self.audio = pyaudio.PyAudio()
-        self.stream_in = self.audio.open(
-            input=True, output=False,
-            format=self.audio.get_format_from_width(
-                self.detector.BitsPerSample() / 8),
-            channels=self.detector.NumChannels(),
-            rate=self.detector.SampleRate(),
-            frames_per_buffer=2048,
-            stream_callback=audio_callback)
+        # try:
+        self.socket_client.connect((self.target_ip, self.target_port))
+        print("connect to audio server")
+        print("recive data thread: {}", self.receive_thread.is_alive())
+        # except:
+        #     print("Couldn't connect to server")
+        # self.stream_in = self.audio.open(
+        #     input=True, output=False,
+        #     format=self.audio.get_format_from_width(
+        #         self.detector.BitsPerSample() / 8),
+        #     channels=self.detector.NumChannels(),
+        #     rate=self.detector.SampleRate(),
+        #     frames_per_buffer=2048,
+        #     stream_callback=audio_callback)
 
         if interrupt_check():
             logger.debug("detect voice return")
             return
-
+        print(1)
         tc = type(detected_callback)
         if tc is not list:
             detected_callback = [detected_callback]
         if len(detected_callback) == 1 and self.num_hotwords > 1:
             detected_callback *= self.num_hotwords
+        print(2)
 
         assert self.num_hotwords == len(detected_callback), \
             "Error: hotwords in your models (%d) do not match the number of " \
@@ -206,7 +236,7 @@ class HotwordDetector(object):
             if len(data) == 0:
                 time.sleep(sleep_time)
                 continue
-
+            print("get data, len: {}".format(len(data)))
             status = self.detector.RunDetection(data)
             if status == -1:
                 logger.warning("Error initializing streams or reading audio data")
@@ -277,7 +307,8 @@ class HotwordDetector(object):
         Terminate audio stream. Users can call start() again to detect.
         :return: None
         """
-        self.stream_in.stop_stream()
-        self.stream_in.close()
+        # self.stream_in.stop_stream()
+        # self.stream_in.close()
+        self.socket_client.close()
         self.audio.terminate()
         self._running = False

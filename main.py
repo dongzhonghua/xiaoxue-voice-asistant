@@ -1,8 +1,10 @@
 import random
 import signal
+import sys
+import traceback
 
 import requests
-import traceback
+
 import snowboydecoder
 from speech import speech_get_word, word_get_speech, play_music
 
@@ -73,7 +75,9 @@ def listening():
 if __name__ == '__main__':
     try:
         listening()
+    except KeyboardInterrupt:
+        print("main exit")
+        sys.exit(-1)
     except Exception as e:
         traceback.print_exc()
         listening()
-
