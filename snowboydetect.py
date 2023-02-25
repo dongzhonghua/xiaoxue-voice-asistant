@@ -3,7 +3,7 @@
 #
 # Do not make changes to this file unless you know what you are doing--modify
 # the SWIG interface file instead.
-
+import sys
 from sys import version_info as _swig_python_version_info
 if _swig_python_version_info < (2, 7, 0):
     raise RuntimeError("Python 2.7 or later required")
@@ -11,8 +11,11 @@ if _swig_python_version_info < (2, 7, 0):
 # Import the low-level C/C++ module
 if __package__ or "." in __name__:
     from resources import _snowboydetect
+elif sys.platform == 'darwin':
+    from model.mac import _snowboydetect
 else:
-    import _snowboydetect
+    from model.linux import _snowboydetect
+
 try:
     import builtins as __builtin__
 except ImportError:

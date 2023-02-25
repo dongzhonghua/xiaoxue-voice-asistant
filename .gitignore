@@ -209,3 +209,6 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
+
+secret_key
+resources/temp*

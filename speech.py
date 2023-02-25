@@ -7,10 +7,12 @@ import pyaudio
 from aip import AipSpeech
 # os.close(sys.stderr.fileno()) # https://raspberrypi.stackexchange.com/questions/103847/cant-use-microphone-with-speech-recognition
 """ 你的 APPID AK SK """
-APP_ID = '25905795'
-API_KEY = 'pUevsjbFFpoLvZg1bwKw8ALi'
-SECRET_KEY = 'jstHVVApR9oz5XKrLKlo6fv8yZG7mOqG'
-
+APP_ID = '30747178'
+API_KEY = 'oNHXGsghRxsEviGNWpnPQzzS'
+SECRET_KEY = ''
+with open("secret_key", 'r') as f:
+    SECRET_KEY = f.readline()
+    print(SECRET_KEY)
 client = AipSpeech(APP_ID, API_KEY, SECRET_KEY)
 speech = 'resources/temp.wav'
 audio = 'resources/temp.mp3'
