@@ -12,7 +12,6 @@ API_KEY = 'oNHXGsghRxsEviGNWpnPQzzS'
 SECRET_KEY = ''
 with open("secret_key", 'r') as f:
     SECRET_KEY = f.readline()
-    print(SECRET_KEY)
 client = AipSpeech(APP_ID, API_KEY, SECRET_KEY)
 speech = 'resources/temp.wav'
 audio = 'resources/temp.mp3'
