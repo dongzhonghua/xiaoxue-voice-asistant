@@ -27,28 +27,31 @@ def speech_get_word():
     get_speech()
     # 识别本地文件
     asr = client.asr(get_file_content(speech), 'wav', 16000, {'dev_pid': 1537, })
-    print(asr)
     if asr['err_msg'] == 'success.':
+        print("百度语音识别成功：" + str(asr["result"][0]))
         return asr["result"][0].encode("utf-8")
     else:
+        print("百度语音识别失败：" + asr.encode("utf-8"))
         return None
 
 
 # https://ai.baidu.com/ai-doc/SPEECH/Gk4nlz8tc
 def word_get_speech(word):
+    if len(word) == 0:
+        play_music("resources/dong.wav")
+        return
     result = client.synthesis(word, 'zh', 3, {
         'vol': 5,
         'per': 103
     })
     # 识别正确返回语音二进制 错误则返回dict 参照下面错误码
     if not isinstance(result, dict):
-        with open(audio, 'wb') as f:
-            f.write(result)
+        with open(audio, 'wb') as f1:
+            f1.write(result)
     play_music(audio)
 
 
-# def get_speech():
-#     os.system("rec -c 1 -r 16000 -b 16 resources/audio.wav trim 0 00:03")
+# os.system("rec -c 1 -r 16000 -b 16 resources/audio.wav trim 0 00:03")
 # 根据你录音的长短决定，这里更新了录音时间，可长可短，最短2秒，最长7秒，用110/16约等于7秒
 # 假如你不说话，2秒钟+1秒判断后识别，假如你说话，最多可以连续7秒钟再识别，很人性化
 def get_speech():
@@ -59,7 +62,7 @@ def get_speech():
     # 录音判断间隔，约等于5/16 s
     interval = 5
     # 最大录音时间128/16=8s
-    max_record_time = 128
+    max_record_time = 80
     chunk = 1024  # 数组大小1024，每一个元素2个字节
     FORMAT = pyaudio.paInt16
     CHANNELS = 1

@@ -1,9 +1,11 @@
 import random
 import signal
+import traceback
 
 import requests
-import traceback
+
 import snowboydecoder
+from chat_gpt import get_chat_result
 from speech import speech_get_word, word_get_speech, play_music
 
 interrupted = False
@@ -45,7 +47,8 @@ def handle_voice():
         requests.get("http://192.168.31.142/off")
         word_get_speech('已关客厅的灯')
     else:
-        word_get_speech('听不懂，再说一遍好吗')
+        chat_result = get_chat_result(str(word, encoding="utf-8"))
+        word_get_speech(chat_result)
 
 
 def callback():
@@ -76,4 +79,3 @@ if __name__ == '__main__':
     except Exception as e:
         traceback.print_exc()
         listening()
-
