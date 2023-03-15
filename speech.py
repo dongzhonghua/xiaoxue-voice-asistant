@@ -28,10 +28,10 @@ def speech_get_word():
     # 识别本地文件
     asr = client.asr(get_file_content(speech), 'wav', 16000, {'dev_pid': 1537, })
     if asr['err_msg'] == 'success.':
-        print("百度语音识别成功：" + str(asr["result"][0]))
+        print("语音转文字成功：" + str(asr["result"][0]))
         return asr["result"][0].encode("utf-8")
     else:
-        print("百度语音识别失败：" + asr.encode("utf-8"))
+        print("语音转文字失败：" + asr.encode("utf-8"))
         return None
 
 
@@ -40,6 +40,7 @@ def word_get_speech(word):
     if len(word) == 0:
         play_music("resources/dong.wav")
         return
+    print("文字转语音开始...")
     result = client.synthesis(word, 'zh', 3, {
         'vol': 5,
         'per': 103
