@@ -1,0 +1,8 @@
+{
+  "openai_key_path": "openai",
+  "baidu_key_path": "secret_key",
+  "https_proxy": "http://127.0.0.1:7890",
+  "http_proxy": "http://127.0.0.1:7890",
+  "chat_role": "一个精通天文地理、学识渊博、百科全书式的人",
+  "chatgpt_model": "gpt-3.5-turbo"
+}
