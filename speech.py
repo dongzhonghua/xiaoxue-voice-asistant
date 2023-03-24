@@ -144,4 +144,4 @@ def play_music(path):
 
 if __name__ == '__main__':
     # get_speech()
-    play_music(audio)
+    play_music('resources/好的主人.mp3')
