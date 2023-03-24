@@ -29,7 +29,9 @@ def get_chat_result(message):
 
 
 if __name__ == '__main__':
-    q = "你好"
-    rsp = get_chat_result(q)
+    q = "你爱我吗？"
+    question["content"] = q
+    origin_messages.append(question)
+    rsp = get_chat_result(origin_messages)
     content = rsp["choices"][0]["message"]["content"]
     print(content)

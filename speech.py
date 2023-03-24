@@ -143,5 +143,5 @@ def play_music(path):
 
 
 if __name__ == '__main__':
-    get_speech()
-    play_music(speech)
+    # get_speech()
+    play_music(audio)
