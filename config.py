@@ -1,7 +1,7 @@
 import configparser
 import threading
-import time
 
+import time
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
@@ -55,7 +55,7 @@ class ConfigHandler(FileSystemEventHandler):
 def listen_config():
     observer = Observer()
     handler = ConfigHandler(global_config)
-    observer.schedule(handler, ".", recursive=False)
+    observer.schedule(handler, path="config.ini", recursive=False)
     observer.start()
     try:
         while True:
