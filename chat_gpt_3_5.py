@@ -7,26 +7,26 @@ import openai
 
 import config
 
-os.environ["http_proxy"] = config.http_proxy
-os.environ["https_proxy"] = config.https_proxy
+os.environ["http_proxy"] = config.global_config.get_https_proxy()
+os.environ["https_proxy"] = config.global_config.get_https_proxy()
 
 #  https://platform.openai.com/docs/guides/chat
 # 需要升级到0.27.0版本的openai，最好用比较新的Python版本，3.6的版本是找不到0.27版本的
 
 # 获取API密钥
-with open(config.openai_key_path, "r") as f:
+with open(config.global_config.get_openai_key_path(), "r") as f:
     openai.api_key = f.readline().strip('\n')
 
 OneMessage = namedtuple('OneMessage', ['time', 'q', 'a'])
-user_messages: deque[OneMessage] = deque(maxlen=int(config.chatgpt_chat_rounds))
+user_messages: deque[OneMessage] = deque(maxlen=int(config.global_config.get_chatgpt_chat_rounds()))
 
-system = {"role": "system", "content": config.chat_role}
+system = {"role": "system", "content": config.global_config.get_chat_role()}
 
 
 def get_messages(message):
     res = [system]
     for one_message in user_messages:
-        if time.time() - one_message.time < config.chatgpt_chat_save_times * 60:
+        if time.time() - one_message.time < config.global_config.get_chatgpt_chat_save_times() * 60:
             res.append(one_message.q)
             res.append(one_message.a)
     question = {"role": "user", "content": message}
@@ -40,7 +40,7 @@ def get_chat_result3_5(message):
     messages, question = get_messages(message)
     print(messages)
     try:
-        response = openai.ChatCompletion.create(model=config.chatgpt_model,
+        response = openai.ChatCompletion.create(model=config.global_config.get_chatgpt_model(),
                                                 messages=messages,
                                                 timeout=20,
                                                 temperature=0.5,

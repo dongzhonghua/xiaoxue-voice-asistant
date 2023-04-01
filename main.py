@@ -1,5 +1,6 @@
 import random
 import signal
+import threading
 import traceback
 
 import requests
@@ -7,7 +8,7 @@ import requests
 import snowboydecoder
 from chat_gpt import get_chat3_result
 from chat_gpt_3_5 import get_chat_result3_5
-from config import chatgpt_version
+from config import global_config, listen_config
 from speech import speech_get_word, word_get_speech, play_music
 
 interrupted = False
@@ -51,7 +52,7 @@ def handle_voice():
         requests.get("http://192.168.31.142/off")
         word_get_speech('已关客厅的灯')
     else:
-        chat_result = chat_model_map[chatgpt_version](str(word, encoding="utf-8"))
+        chat_result = chat_model_map[global_config.get_chatgpt_version()](str(word, encoding="utf-8"))
         word_get_speech(chat_result)
 
 
@@ -79,7 +80,12 @@ def listening():
 
 if __name__ == '__main__':
     try:
+        t1 = threading.Thread(target=listen_config)
+        t1.start()
         listening()
-    except Exception as e:
-        traceback.print_exc()
-        listening()
+        t1.join()
+    except InterruptedError as e:
+        pass
+    # except Exception as e:
+    #     traceback.print_exc()
+    #     listening()

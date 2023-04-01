@@ -26,4 +26,4 @@ def get_chat3_result(prompt: str) -> str:
 
 
 if __name__ == '__main__':
-    print(get_chat_result("test"))
+    print(get_chat3_result("test"))

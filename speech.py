@@ -1,16 +1,18 @@
 import os
-import sys
 import wave
 
 import numpy as np
 import pyaudio
 from aip import AipSpeech
-# os.close(sys.stderr.fileno()) # https://raspberrypi.stackexchange.com/questions/103847/cant-use-microphone-with-speech-recognition
+
+import config
+
+# https://raspberrypi.stackexchange.com/questions/103847/cant-use-microphone-with-speech-recognition
+# os.close(sys.stderr.fileno())
 """ 你的 APPID AK SK """
 APP_ID = '30747178'
 API_KEY = 'oNHXGsghRxsEviGNWpnPQzzS'
-SECRET_KEY = ''
-with open("secret_key", 'r') as f:
+with open(config.global_config.get_baidu_key_path(), 'r') as f:
     SECRET_KEY = f.readline()
 client = AipSpeech(APP_ID, API_KEY, SECRET_KEY)
 speech = 'resources/temp.wav'
