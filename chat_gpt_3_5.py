@@ -12,7 +12,7 @@ os.environ["https_proxy"] = config.https_proxy
 
 # 获取API密钥
 with open(config.openai_key_path, "r") as f:
-    openai.api_key = f.readline()
+    openai.api_key = f.readline().strip('\n')
 
 origin_messages = [
     {"role": "system", "content": config.chat_role},
