@@ -44,13 +44,14 @@ def get_chat_result3_5(message):
                                                 messages=messages,
                                                 timeout=20,
                                                 temperature=0.5,
-                                                max_tokens=800,
+                                                max_tokens=200,
                                                 )
     except Exception as e:
         print(e)
         return None
     answer = response["choices"][0]["message"]["content"]
     one_chat_message: OneMessage = OneMessage(time.time(), question, {"role": "assistant", "content": answer})
+    print(f"chat response: {answer}")
     user_messages.append(one_chat_message)
     return answer
 
