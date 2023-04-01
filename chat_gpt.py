@@ -3,10 +3,10 @@ import openai
 openai.organization = "org-irLfRXYHIV7TUVtE2I37Lhj4"
 # 获取API密钥
 with open("openai", "r") as f:
-    openai.api_key = f.readline()
+    openai.api_key = f.readline().strip()
 
 
-def get_chat_result(prompt: str) -> str:
+def get_chat3_result(prompt: str) -> str:
     if len(prompt) == 0:
         return ""
     model = "text-davinci-003"  # ChatGPT模型

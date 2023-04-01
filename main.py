@@ -5,11 +5,15 @@ import traceback
 import requests
 
 import snowboydecoder
-from chat_gpt import get_chat_result
+from chat_gpt import get_chat3_result
+from chat_gpt_3_5 import get_chat_result3_5
+from config import chatgpt_version
 from speech import speech_get_word, word_get_speech, play_music
 
 interrupted = False
 model = "model/小雪.pmdl"  # https://snowboy.hahack.com/
+
+chat_model_map = {"3.5": get_chat_result3_5, "3.0": get_chat3_result}
 
 
 def signal_handler(signal, frame):
@@ -47,7 +51,7 @@ def handle_voice():
         requests.get("http://192.168.31.142/off")
         word_get_speech('已关客厅的灯')
     else:
-        chat_result = get_chat_result(str(word, encoding="utf-8"))
+        chat_result = chat_model_map[chatgpt_version](str(word, encoding="utf-8"))
         word_get_speech(chat_result)
 
 

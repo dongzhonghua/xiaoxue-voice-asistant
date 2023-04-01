@@ -37,7 +37,7 @@ def speech_get_word():
 
 # https://ai.baidu.com/ai-doc/SPEECH/Gk4nlz8tc
 def word_get_speech(word):
-    if len(word) == 0:
+    if not word or len(word) == 0:
         play_music("resources/dong.wav")
         return
     print("文字转语音开始...")

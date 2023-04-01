@@ -1,4 +1,7 @@
 import os
+import time
+from collections import deque
+from collections import namedtuple
 
 import openai
 
@@ -14,24 +17,48 @@ os.environ["https_proxy"] = config.https_proxy
 with open(config.openai_key_path, "r") as f:
     openai.api_key = f.readline().strip('\n')
 
-origin_messages = [
-    {"role": "system", "content": config.chat_role},
-]
+OneMessage = namedtuple('OneMessage', ['time', 'q', 'a'])
+user_messages: deque[OneMessage] = deque(maxlen=int(config.chatgpt_chat_rounds))
 
-question = {"role": "user", "content": ""}
+system = {"role": "system", "content": config.chat_role}
 
 
-def get_chat_result(message):
-    return openai.ChatCompletion.create(
-        model=config.chatgpt_model,
-        messages=message
-    )
+def get_messages(message):
+    res = [system]
+    for one_message in user_messages:
+        if time.time() - one_message.time < config.chatgpt_chat_save_times * 60:
+            res.append(one_message.q)
+            res.append(one_message.a)
+    question = {"role": "user", "content": message}
+    res.append(question)
+    return res, question
+
+
+def get_chat_result3_5(message):
+    if message is None:
+        return None
+    messages, question = get_messages(message)
+    print(messages)
+    try:
+        response = openai.ChatCompletion.create(model=config.chatgpt_model,
+                                                messages=messages,
+                                                timeout=20,
+                                                temperature=0.5,
+                                                max_tokens=800,
+                                                )
+    except Exception as e:
+        print(e)
+        return None
+    answer = response["choices"][0]["message"]["content"]
+    one_chat_message: OneMessage = OneMessage(time.time(), question, {"role": "assistant", "content": answer})
+    user_messages.append(one_chat_message)
+    return answer
 
 
 if __name__ == '__main__':
-    q = "你爱我吗？"
-    question["content"] = q
-    origin_messages.append(question)
-    rsp = get_chat_result(origin_messages)
-    content = rsp["choices"][0]["message"]["content"]
-    print(content)
+    rsp = get_chat_result3_5("什么是Python")
+    print(rsp)
+    rsp = get_chat_result3_5("那他和Java的区别是什么")
+    print(rsp)
+    rsp = get_chat_result3_5("这两种语言哪个好")
+    print(rsp)

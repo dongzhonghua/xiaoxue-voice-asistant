@@ -4,5 +4,8 @@
   "https_proxy": "http://127.0.0.1:7890",
   "http_proxy": "http://127.0.0.1:7890",
   "chat_role": "You are a knowledgeable person, please reply in Chinese",
-  "chatgpt_model": "gpt-3.5-turbo"
+  "chatgpt_version": "3.5",
+  "chatgpt_model": "gpt-3.5-turbo",
+  "chatgpt_chat_rounds": 5,
+  "chatgpt_chat_save_times": 5
 }
